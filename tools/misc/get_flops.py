@@ -16,7 +16,7 @@ def parse_args():
         '--shape',
         type=int,
         nargs='+',
-        default=[224, 224],
+        default=[1920, 1080],
         help='input image size')
     parser.add_argument(
         '--cfg-options',
@@ -53,7 +53,7 @@ def main():
         h = int(np.ceil(h / divisor)) * divisor
         w = int(np.ceil(w / divisor)) * divisor
 
-    input_shape = (3, h, w)
+    input_shape = (3, 1333 ,800)
 
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:

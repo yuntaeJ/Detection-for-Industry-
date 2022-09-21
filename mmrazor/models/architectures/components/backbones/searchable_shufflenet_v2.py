@@ -33,7 +33,14 @@ class SearchableShuffleNetV2(BaseBackbone):
             memory while slowing down the training speed. Default: False.
         init_cfg (dict): Init config dict for ``BaseBackbone``.
     """
-
+    
+    # if '300M' in model_size:
+    #     stage_repeats = [4, 4, 8, 4]
+    #     stage_out_channels = [-1, 16, 64, 160, 320, 640, 1024]
+    # elif '1.3G' in model_size:
+    #     stage_repeats = [8, 8, 16, 8]
+    #     stage_out_channels = [-1, 48, 96, 240, 480, 960, 1024]
+    
     def __init__(self,
                  stem_multiplier=1,
                  widen_factor=1.0,
@@ -47,10 +54,14 @@ class SearchableShuffleNetV2(BaseBackbone):
                  with_cp=False,
                  **kwargs):
         super(SearchableShuffleNetV2, self).__init__(**kwargs)
+        
+        
         self.stage_blocks = [4, 4, 8, 4]
+        # self.stage_blocks = [8, 8, 16, 8]
+        # self.stage_blocks = [20, 20, 40, 20]
         self.widen_factor = widen_factor
         self.out_indices = out_indices
-        self.frozen_stages = frozen_stages
+        self.frozen_stages = frozen_stages # should be -1
         self.conv_cfg = conv_cfg
         self.norm_cfg = norm_cfg
         self.act_cfg = act_cfg
@@ -63,9 +74,23 @@ class SearchableShuffleNetV2(BaseBackbone):
             round(320 * self.widen_factor),
             round(640 * self.widen_factor)
         ]
+        # channels = [
+        #     round(96 * self.widen_factor),
+        #     round(240 * self.widen_factor),
+        #     round(480 * self.widen_factor),
+        #     round(960 * self.widen_factor)
+        # ]
+        # channels = [
+        #     round(256 * self.widen_factor),
+        #     round(512 * self.widen_factor),
+        #     round(1024 * self.widen_factor),
+        #     round(2048 * self.widen_factor)
+        # ]
         last_channels = 1024
-
+        
         self.in_channels = 16 * stem_multiplier
+        # self.in_channels = 48 * stem_multiplier 
+        # self.in_channels = 128 * stem_multiplier
         self.conv1 = ConvModule(
             in_channels=3,
             out_channels=self.in_channels,
